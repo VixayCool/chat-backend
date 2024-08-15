@@ -31,4 +31,14 @@ return [
         ],
     ],
 
+    'azure_translator'=>[
+        'key'=>env('AZURE_TRANSLATOR_KEY'),
+        'endpoint'=>env('AZURE_TRANSLATOR_ENDPOINT'),
+    ],
+
+    'azure_summarization'=>[
+        'key'=>env('AZURE_SUMMARIZATION_KEY'),
+        'endpoint'=>env('AZURE_SUMMARIZATION_ENDPOINT'),
+    ]
+
 ];
