@@ -17,7 +17,7 @@ Route::post('/user/profile', [UserController::class, 'storeProfileImage'])->midd
 Route::post('/user/background', [UserController::class, 'storeBackgroundImage'])->middleware('auth:sanctum');
 
 Route::post('/friends/search', [FriendshipController::class, 'search_friendship'])->middleware('auth:sanctum');
-Route::post('/friendship/request', [FriendshipController::class, 'friend_request'])->middleware('auth:sanctum');
+Route::post('/friendship/request', [FriendshipController::class, 'request'])->middleware('auth:sanctum');
 Route::get('/friends', [FriendshipController::class, 'get_friendship_request'])->middleware('auth:sanctum');
 Route::get('/friendship/pending', [FriendshipController::class, 'get_pending_friendship'])->middleware('auth:sanctum');
 Route::post('/friendship/accept/{friendship_id}', [FriendshipController::class, 'accept'])->middleware('auth:sanctum');

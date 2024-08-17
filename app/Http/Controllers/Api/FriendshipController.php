@@ -13,7 +13,7 @@ use App\Models\User;
 use App\Events\FriendshipAccepted;
 class FriendshipController extends Controller
 {
-    public function friend_request(Request $request){
+    public function request(Request $request){
         try{
             $validated = Validator::make($request->all(), [
                 "friend_id"=>"required",
@@ -36,6 +36,7 @@ class FriendshipController extends Controller
             return response()->json([
                 "status"=>"success",
                 "message"=>"friendship request sent successfully",
+                "data"=>$friendship,
             ], 200);
         }
         catch(\Exception $e){
@@ -122,12 +123,12 @@ class FriendshipController extends Controller
             $query->where('user_id', $user->id)->where('status', 'accepted');})
             ->orWhere(function($query) use ($user){
             $query->where('friend_id', $user->id)->where('status', 'accepted');
-        })->get();
+        })->limit(10)->get();
 
           $friends = $friendships->map(function ($friendship) use ($user){
             $friend_id = $friendship->user_id === $user->id? $friendship->friend_id : $friendship->user_id;
             $data = User::with("profile")->find($friend_id);
-            $data->friendship_id = $friendship->id;
+            $data->friendship = $friendship;
             $data->latest_message = $friendship->latestMessage()->first();
             if($data->profile){
               $data->profile = $this->getProfile($data->profile);
@@ -161,12 +162,7 @@ class FriendshipController extends Controller
       public function get_pending_friendship(){
         try{
           $user = Auth::user();
-          $friendships = Friendship::where(function($query) use ($user){
-            $query->where('user_id', $user->id)->where('status', 'pending');})
-            ->orWhere(function($query) use ($user){
-            $query->where('friend_id', $user->id)->where('status', 'pending');
-        })->get();
-          
+          $friendships = Friendship::where('friend_id', $user->id)->where('status', 'pending')->get();
           $friends = $friendships->map(function ($friendship) use ($user){
             $friend_id = $friendship->user_id === $user->id? $friendship->friend_id : $friendship->user_id;
            
@@ -209,22 +205,21 @@ class FriendshipController extends Controller
             return response()->json([
               "status"=>"friend not found",],
               404);}   
-
+             
           $friendship = Friendship::where(function($query) use ($user, $friend){
                 $query->where('user_id', $user->id)->where('friend_id', $friend->id);})
                 ->orWhere(function($query) use ($user, $friend){
                   $query->where('user_id', $friend->id)->where('friend_id', $user->id);
-            })->firstOrFail();
-
-          if($friendship) $friend->friendship = $friendship;
-         
+            })->first();         
           if($friend->profile){
             $friend->profile = $this->getProfile($friend->profile);
           }
-         
+          $friend->friendship = $friendship;
+          Log::Info("passed");
           return response()->json([
               "status"=>"success",
               "data"=>$friend,
+              "isFriend"=>$friendship ? true: false,
           ],200);
         }
         catch(\Exception $e){

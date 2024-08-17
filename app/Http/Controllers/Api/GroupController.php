@@ -56,7 +56,7 @@ class GroupController extends Controller
     public function get(){
         try{
             $user = Auth::user();
-            $groups = $user->groups()->with(['latestMessage', 'profile', 'users'])->get();
+            $groups = $user->groups()->with(['latestMessage', 'profile', 'users'])->limit(5)->get();
             $groups->each(function ($group){
                 $group->profile = $this->getProfile($group->profile);
                 $group->users->each(function ($user){
