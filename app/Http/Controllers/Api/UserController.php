@@ -15,7 +15,7 @@ use App\Models\Profile;
 
 class UserController extends Controller
 {
-    public function register(Request $request)
+    public function signup(Request $request)
     {
         try {
             $validated = Validator::make($request->all(), [
@@ -30,6 +30,15 @@ class UserController extends Controller
                     'data' => $validated->errors(),
                 ], 422);
             }
+            $email_existed = User::where("email", $request->email)->first();
+            if($email_existed) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'email is already used',
+                    'data' => $validated->errors(),
+                ], 422);
+            }
+
             //check  if email is used
             DB::beginTransaction();
             $user = User::create([
@@ -103,9 +112,7 @@ class UserController extends Controller
                 'status' => 'success',
                 'message' => 'user updated successfully',
                 'data'=> $user,
-            ], 200);
-
-        }
+            ], 200);       }
         catch(\Exception $e){
 
         }
@@ -300,3 +307,4 @@ class UserController extends Controller
     }
 
 }   
+

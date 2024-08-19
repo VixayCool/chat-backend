@@ -14,6 +14,7 @@ class Message extends Model
         'content',
         'destination_id',
         'destination_type',
+        'message_type'
 
     ];
     public function sender(){

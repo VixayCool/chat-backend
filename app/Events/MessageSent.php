@@ -20,12 +20,14 @@ class MessageSent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $message; 
+    public $receiver_id;
     /**
      * Create a new event instance.
      */
-    public function __construct($message)
+    public function __construct($message, $receiver_id)
     {
         $this->message = $message;
+        $this->receiver_id = $receiver_id;
         $this->broadcastOn();
     }
 
@@ -44,11 +46,10 @@ class MessageSent implements ShouldBroadcastNow
             }
             else{
                 
-                $friendship = Friendship::find($this->message->destination_id);
-                $recipientId = $this->message->sender_id == $friendship->user_id ? $friendship->friend_id:$friendship->user_id;
+                
                 return [
                     //change to presence chaneel
-                    new PrivateChannel('message.'.$recipientId),
+                    new PrivateChannel('message.'.$this->receiver_id),
                 ];
             }        
     }

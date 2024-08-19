@@ -56,11 +56,23 @@ class GroupController extends Controller
     public function get(){
         try{
             $user = Auth::user();
-            $groups = $user->groups()->with('latestMessage')->get();
-            $groups->map(function ($item){
-                $profile = $item->profile;
-                $item->profile = $this->getProfile($profile);
-                
+            $groups = $user->groups()->with(['latestMessage', 'profile', 'users'])->limit(5)->get();
+            $groups->each(function ($group){
+                $group->profile = $this->getProfile($group->profile);
+                $group->users->each(function ($user){
+                    if($user->profile){
+                        $user->profile->profile_image = asset('profile/'.$user->profile->profile_image);
+                    }
+                }); 
+                if($group->latestMessage !== null){             
+                    if($group->latestMessage->message_type == "file"){
+                        $position = strpos($group->latestMessage->content, ".");
+                        if($position){
+                            $group->latestMessage->content = substr($group->latestMessage->content, $position+1);
+                        } 
+                    }     
+                } 
+                        
             });
             return response()->json([
                 'status' => 'success',
@@ -187,10 +199,7 @@ class GroupController extends Controller
             }
             DB::beginTransaction();
             $group->users()->attach($user_id, ["role"=>"member"]);
-            DB::commit();
-            $member = User::with("profile")->find($user_id);
-            $member->profile = $this->getProfile($member->profile);
-           
+            DB::commit();        
             
             return response()->json([
                 'status' => 'success',
