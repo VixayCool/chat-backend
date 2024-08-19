@@ -50,7 +50,10 @@ Route::delete('/group/leave/{id}', [GroupController::class, 'leaveGroup'])->midd
 Route::middleware('auth:sanctum')->post('/broadcasting/auth', function (Request $request) {
     return true; // Change later
 }); 
-
+//debug
+Route::get('/example', function (Request $request) {
+    return response()->json(['message' => 'This is an example route']);
+});
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
 require base_path('routes/channels.php');
