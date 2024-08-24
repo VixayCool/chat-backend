@@ -45,10 +45,10 @@ class MessageSent implements ShouldBroadcastNow
                 ];
             }
             else{
-                
-                
+
                 return [
                     //change to presence chaneel
+                   
                     new PrivateChannel('message.'.$this->receiver_id),
                 ];
             }        
