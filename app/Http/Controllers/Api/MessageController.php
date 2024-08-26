@@ -41,8 +41,6 @@ class MessageController extends Controller
 
             DB::beginTransaction();
             $user = Auth::user();
-            Log::Info($request->all());
-
             $message_type ="message";
             $message_content = $request->content;
 
@@ -206,6 +204,12 @@ class MessageController extends Controller
             $startDate = Carbon::createFromFormat('m/d/Y', $request->query('startDate'))->startOfDay();
             $endDate = Carbon::createFromFormat('m/d/Y', $request->query('endDate'))->endOfDay();
             $messages = $room->messages()->whereBetween('created_at', [$startDate, $endDate])->with("sender")->get();
+            if ($messages->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'data' => 'No messages found for the specified date range', 
+                ], 200);
+            }
             $arranged_messages = "";    
             $messages->each(function($message) use (&$arranged_messages){
                 if($message->message_type !="file"){

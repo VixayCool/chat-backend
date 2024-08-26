@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\Broadcast;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\FriendshipController;
 use App\Http\Controllers\Api\MessageController;
@@ -48,8 +49,8 @@ Route::delete('/group/{group_id}/member/delete/{friend_id}', [GroupController::c
 Route::delete('/group/leave/{id}', [GroupController::class, 'leaveGroup'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->post('/broadcasting/auth', function (Request $request) {
-    return true; // Change later
-}); 
+    return Broadcast::auth($request);
+});
 
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
 

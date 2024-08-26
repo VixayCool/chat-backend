@@ -55,8 +55,21 @@ class FriendshipController extends Controller
          
           //need to implement checking the requested user and that friendship status.
           DB::beginTransaction();
-          $friendship = Friendship::find($friendship_id)->update(['status'=>"accepted"]);
-          $friendship->$friendship_id = $friendship_id;
+          $friendship = Friendship::find($friendship_id);
+        if (!$friendship) {
+            return response()->json([
+                "status" => "error",
+                "message" => "Friendship request not found",
+            ], 404);
+        }
+        if ($friendship->status !== 'pending') {
+            return response()->json([
+                "status" => "error",
+                "message" => "Friendship request is not pending",
+            ], 400);
+        }
+        $friendship->status = 'accepted';
+        $friendship->save();
           DB::commit();
           broadcast(new FriendshipAccepted($friendship));
           return response()->json([
@@ -78,7 +91,21 @@ class FriendshipController extends Controller
           
           //need to implement checking the requested user and that friendship status.
           DB::beginTransaction();
-          $friendship = Friendship::find($friendship_id)->update(['status'=>"declined"]);
+          $friendship = Friendship::find($friendship_id);
+        if (!$friendship) {
+            return response()->json([
+                "status" => "error",
+                "message" => "Friendship request not found",
+            ], 404);
+        }
+        if ($friendship->status !== 'pending') {
+            return response()->json([
+                "status" => "error",
+                "message" => "Friendship request is not pending",
+            ], 400);
+        }
+        $friendship->status = 'declined';
+        $friendship->save();
           DB::commit();
           return response()->json([
               "status"=>"success",
@@ -99,7 +126,21 @@ class FriendshipController extends Controller
          
           //need to implement checking the requested user and that friendship status.
           DB::beginTransaction();
-          $friendship = Friendship::find($friendship_id)->update(['status'=>"deleted"]);
+          $friendship = Friendship::find($friendship_id);
+        if (!$friendship) {
+            return response()->json([
+                "status" => "error",
+                "message" => "Friendship request not found",
+            ], 404);
+        }
+        if ($friendship->status !== 'pending') {
+            return response()->json([
+                "status" => "error",
+                "message" => "Friendship request is not pending",
+            ], 400);
+        }
+        $friendship->status = 'deleted';
+        $friendship->save();
           DB::commit();
           return response()->json([
               "status"=>"success",
@@ -123,7 +164,7 @@ class FriendshipController extends Controller
             $query->where('user_id', $user->id)->where('status', 'accepted');})
             ->orWhere(function($query) use ($user){
             $query->where('friend_id', $user->id)->where('status', 'accepted');
-        })->limit(10)->get();
+        })->get();//should add limit later
 
           $friends = $friendships->map(function ($friendship) use ($user){
             $friend_id = $friendship->user_id === $user->id? $friendship->friend_id : $friendship->user_id;
@@ -167,7 +208,7 @@ class FriendshipController extends Controller
             $friend_id = $friendship->user_id === $user->id? $friendship->friend_id : $friendship->user_id;
            
             $data = User::with("profile")->find($friend_id);
-            $data->friendship_id = $friendship->id;
+            $data->friendship = $friendship;
             if($data->profile){
                $data->profile = $this->getProfile($data->profile);
             }
