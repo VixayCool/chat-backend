@@ -19,7 +19,7 @@ class AzureSummarizationService{
     public function summarize($lang, $text){
         $response = Http::withHeaders([
             'Ocp-Apim-Subscription-Key'=>$this->key,
-            'Ocp-Apim-Subscription-Region'=>'eastasia', 
+            'Ocp-Apim-Subscription-Region'=>'japanwest', 
             'Content-Type'=>"application/json"
             ])->post("{$this->endpoint}/language/analyze-text/jobs?api-version=2023-04-01", [
                 "displayName"=> "Text Summarization Task",
@@ -41,7 +41,13 @@ class AzureSummarizationService{
                   ]
                 ]
               ]);
-        
+
+        Log::info('Azure translation', [
+            'text' => $text,
+            'to language' => $lang,
+            'response' => $response->body(),
+        ]);
+
         $operationLocation = $response->header('Operation-Location');
         return $this->translator->translate($this->pollJobStatus($operationLocation), $lang);       
     }
