@@ -17,13 +17,20 @@ return [
 
     'paths' => ['api/*', 'sanctum/csrf-cookie', 'broadcasting/auth'],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['POST', 'GET', 'PUT', 'DELETE'],
    
-    'allowed_origins' => [env('FRONTEND_URL', 'https://white-moss-0f8134a1e.5.azurestaticapps.net')],
+    'allowed_origins' => ['https://victorious-stone-0a123d900.3.azurestaticapps.net'],
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => [
+            'Content-Type', 
+            'X-Requested-With', 
+            'X-XSRF-TOKEN', 
+            'Authorization',
+            'Accept'
+        ],
+
 
     'exposed_headers' => [],
 

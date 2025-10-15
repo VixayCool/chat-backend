@@ -55,7 +55,6 @@ class UserController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollback();
-
             return response()->json([
                 'status' => 'error',
                 'message' => 'internal server error',
@@ -95,8 +94,6 @@ class UserController extends Controller
                 'token' => $user->createToken('auth-token')->plainTextToken,
             ], 200);
         } catch (\Exception $e) {
-            DB::rollback();
-
             return response()->json([
                 'status' => 'error',
                 'message' => 'internal server error',
@@ -115,6 +112,11 @@ class UserController extends Controller
             ], 200);       }
         catch(\Exception $e){
 
+            return response()->json([
+                'status' => 'error',
+                'message' => 'internal server error',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
     public function getUser($id){
@@ -129,7 +131,12 @@ class UserController extends Controller
 
         }
         catch(\Exception $e){
-
+           
+            return response()->json([
+                'status' => 'error',
+                'message' => 'internal server error',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
     public function update(Request $request)

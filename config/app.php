@@ -52,7 +52,8 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    // 'url' => env('APP_URL', 'http://localhost'),
+    'url' => 'https://chat-backend-g3f0a4cxd5cbfgga.eastasia-01.azurewebsites.net',
 
     /*
     |--------------------------------------------------------------------------

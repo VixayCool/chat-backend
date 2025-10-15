@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\AzureTranslatorService;
-use App\Services\AzureSummarizationService;
+use App\Services\GeminiSummarizationService;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -41,8 +41,6 @@ class MessageController extends Controller
 
             DB::beginTransaction();
             $user = Auth::user();
-            Log::Info($request->all());
-
             $message_type ="message";
             $message_content = $request->content;
 
@@ -194,7 +192,7 @@ class MessageController extends Controller
         }
     }
 
-    public function summarizeConversation(Request $request, $room_type, $id, AzureSummarizationService $summarizer){
+    public function summarizeConversation(Request $request, $room_type, $id, GeminiSummarizationService $summarizer){
         try{
             
             if($room_type == 'group'){
@@ -206,14 +204,20 @@ class MessageController extends Controller
             $startDate = Carbon::createFromFormat('m/d/Y', $request->query('startDate'))->startOfDay();
             $endDate = Carbon::createFromFormat('m/d/Y', $request->query('endDate'))->endOfDay();
             $messages = $room->messages()->whereBetween('created_at', [$startDate, $endDate])->with("sender")->get();
+            if ($messages->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'data' => 'No messages found for the specified date range', 
+                ], 200);
+            }
             $arranged_messages = "";    
             $messages->each(function($message) use (&$arranged_messages){
                 if($message->message_type !="file"){
                     $arranged_messages .= $message->sender->name.":".$message->content.",";
                 }
             });
-            Log::Info($arranged_messages);
-            $summarized_content = $summarizer->summarize($request->query('lang'), $arranged_messages);
+            Log::Info( $arranged_messages);
+            $summarized_content = $summarizer->summarize($arranged_messages, $request->query('lang'));
             Log::Info($summarized_content);
             return response()->json([
                 'status'=>"message translated successfully",

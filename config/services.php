@@ -39,6 +39,10 @@ return [
     'azure_summarization'=>[
         'key'=>env('AZURE_SUMMARIZATION_KEY'),
         'endpoint'=>env('AZURE_SUMMARIZATION_ENDPOINT'),
+    ],
+
+    'openai' => [
+        'key' => env('OPENAI_KEY')
     ]
 
 ];

@@ -20,7 +20,7 @@ class Group extends Model
         return $this->hasMany(Message::class,"destination_id")->where("destination_type", "group");
     }
     public function latestMessage(){
-        return $this->hasOne(Message::class, "destination_id")->where("destination_type", "group")->latestOfMany();
+        return $this->hasOne(Message::class, "destination_id")->where("destination_type", "group")->latest();
     }
     public function profile(){
         return $this->hasOne(GroupProfile::class, "group_id", "id");
