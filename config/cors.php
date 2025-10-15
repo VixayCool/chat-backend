@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
    
-    'allowed_origins' => ['https://victorious-stone-0a123d900.3.azurestaticapps.net'],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
