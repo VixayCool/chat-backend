@@ -17,7 +17,7 @@ return [
 
     'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
         '%s%s',
-        'localhost, https://victorious-stone-0a123d900.3.azurestaticapps.net,127.0.0.1,127.0.0.1:8000,::1',
+        ' victorious-stone-0a123d900.3.azurestaticapps.net,localhost, 127.0.0.1,127.0.0.1:8000,::1',
         Sanctum::currentApplicationUrlWithPort()
     ))),
 
